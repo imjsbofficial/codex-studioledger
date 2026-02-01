@@ -79,6 +79,37 @@ main {
   color: #6a6f85;
 }
 
+.kpi-card {
+  border: 1px solid #eef0f6;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.kpi-tile {
+  padding: 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  border: 1px solid #eef0f6;
+}
+
+.kpi-label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6a6f85;
+}
+
+.kpi-tile h3 {
+  margin: 0;
+  font-size: 22px;
+  color: #1a1f36;
+}
+
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -123,5 +154,33 @@ th {
   .page-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .col-dates,
+  .col-location {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  body {
+    padding: 20px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    min-width: 600px;
+  }
+
+  .col-client,
+  .col-project {
+    display: none;
   }
 }

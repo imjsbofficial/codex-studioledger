@@ -19,6 +19,31 @@
     </header>
 
     <main>
+      <section class="card kpi-card">
+        <div class="card-header">
+          <h2>Overview</h2>
+          <p>Totals across all projects and events.</p>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-tile">
+            <p class="kpi-label">Projects</p>
+            <h3 id="kpi-projects">0</h3>
+          </div>
+          <div class="kpi-tile">
+            <p class="kpi-label">Vendor Paid</p>
+            <h3 id="kpi-vendor">₹0</h3>
+          </div>
+          <div class="kpi-tile">
+            <p class="kpi-label">Total Expense</p>
+            <h3 id="kpi-expense">₹0</h3>
+          </div>
+          <div class="kpi-tile">
+            <p class="kpi-label">Profit</p>
+            <h3 id="kpi-profit">₹0</h3>
+          </div>
+        </div>
+      </section>
+
       <section class="card">
         <div class="card-header">
           <h2>Project Profitability</h2>
@@ -29,9 +54,9 @@
             <thead>
               <tr>
                 <th>Project</th>
-                <th>Client</th>
-                <th>Dates</th>
-                <th>Location</th>
+                <th class="col-client">Client</th>
+                <th class="col-dates">Dates</th>
+                <th class="col-location">Location</th>
                 <th>Vendor Paid</th>
                 <th>Total Expense</th>
                 <th>Profit</th>
@@ -52,8 +77,8 @@
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Project ID</th>
-                <th>Location</th>
+                <th class="col-project">Project ID</th>
+                <th class="col-location">Location</th>
                 <th>Team Cost</th>
                 <th>Other Expenses</th>
               </tr>
@@ -93,10 +118,76 @@
         maximumFractionDigits: 0,
       });
 
+      const demoData = {
+        projects: [
+          {
+            project_name: "Brand Launch Campaign",
+            project_by: "Kite Studios",
+            start_date: "2025-02-01",
+            end_date: "2025-02-02",
+            location: "Mumbai",
+            vendor_paid: 150000,
+            total_expense: 58500,
+            profit: 91500,
+          },
+        ],
+        events: [
+          {
+            event_date: "2025-02-01",
+            project_id: "demo",
+            location: "Mumbai Studio",
+            team_cost: 35000,
+            other_expenses: 5000,
+          },
+          {
+            event_date: "2025-02-02",
+            project_id: "demo",
+            location: "Mumbai Outdoor",
+            team_cost: 38000,
+            other_expenses: 6500,
+          },
+        ],
+        teamMembers: [
+          {
+            name: "Asha Nair",
+            role: "Director",
+            events_assigned: 2,
+            total_due: 42000,
+            total_paid: 10000,
+            pending_payment: 32000,
+          },
+          {
+            name: "Ravi Mehta",
+            role: "Cinematographer",
+            events_assigned: 2,
+            total_due: 31000,
+            total_paid: 8000,
+            pending_payment: 23000,
+          },
+        ],
+      };
+
       const setStatus = (message, ok = true) => {
         const chip = document.getElementById("status-chip");
         chip.textContent = message;
         chip.classList.toggle("status-error", !ok);
+      };
+
+      const updateKpis = (projects) => {
+        const totals = projects.reduce(
+          (acc, project) => {
+            acc.vendor += project.vendor_paid ?? 0;
+            acc.expense += project.total_expense ?? 0;
+            acc.profit += project.profit ?? 0;
+            return acc;
+          },
+          { vendor: 0, expense: 0, profit: 0 }
+        );
+
+        document.getElementById("kpi-projects").textContent = projects.length;
+        document.getElementById("kpi-vendor").textContent = formatter.format(totals.vendor);
+        document.getElementById("kpi-expense").textContent = formatter.format(totals.expense);
+        document.getElementById("kpi-profit").textContent = formatter.format(totals.profit);
       };
 
       const renderRows = (tableId, rows, renderRow) => {
@@ -117,12 +208,14 @@
             fetch("/api/team-members").then((res) => res.json()),
           ]);
 
+          updateKpis(projects);
+
           renderRows("projects-table", projects, (row) => {
             return `
               <td>${row.project_name}</td>
-              <td>${row.project_by}</td>
-              <td>${row.start_date} → ${row.end_date}</td>
-              <td>${row.location}</td>
+              <td class="col-client">${row.project_by}</td>
+              <td class="col-dates">${row.start_date} → ${row.end_date}</td>
+              <td class="col-location">${row.location}</td>
               <td>${formatter.format(row.vendor_paid)}</td>
               <td>${formatter.format(row.total_expense)}</td>
               <td class="profit">${formatter.format(row.profit)}</td>
@@ -132,8 +225,8 @@
           renderRows("events-table", events, (row) => {
             return `
               <td>${row.event_date}</td>
-              <td>${row.project_id}</td>
-              <td>${row.location}</td>
+              <td class="col-project">${row.project_id}</td>
+              <td class="col-location">${row.location}</td>
               <td>${formatter.format(row.team_cost)}</td>
               <td>${formatter.format(row.other_expenses)}</td>
             `;
@@ -153,7 +246,42 @@
           setStatus("Live data loaded");
         } catch (error) {
           console.error(error);
-          setStatus("Failed to load data", false);
+          updateKpis(demoData.projects);
+
+          renderRows("projects-table", demoData.projects, (row) => {
+            return `
+              <td>${row.project_name}</td>
+              <td class="col-client">${row.project_by}</td>
+              <td class="col-dates">${row.start_date} → ${row.end_date}</td>
+              <td class="col-location">${row.location}</td>
+              <td>${formatter.format(row.vendor_paid)}</td>
+              <td>${formatter.format(row.total_expense)}</td>
+              <td class="profit">${formatter.format(row.profit)}</td>
+            `;
+          });
+
+          renderRows("events-table", demoData.events, (row) => {
+            return `
+              <td>${row.event_date}</td>
+              <td class="col-project">${row.project_id}</td>
+              <td class="col-location">${row.location}</td>
+              <td>${formatter.format(row.team_cost)}</td>
+              <td>${formatter.format(row.other_expenses)}</td>
+            `;
+          });
+
+          renderRows("team-table", demoData.teamMembers, (row) => {
+            return `
+              <td>${row.name}</td>
+              <td>${row.role ?? "—"}</td>
+              <td>${row.events_assigned}</td>
+              <td>${formatter.format(row.total_due)}</td>
+              <td>${formatter.format(row.total_paid)}</td>
+              <td class="pending">${formatter.format(row.pending_payment)}</td>
+            `;
+          });
+
+          setStatus("Demo data loaded (offline)", false);
         }
       };
 
