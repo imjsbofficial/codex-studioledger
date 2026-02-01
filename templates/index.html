@@ -136,6 +136,7 @@
           <div class="card-header">
             <h2>Project Profitability</h2>
             <p>Vendor payments vs. total expenses per project.</p>
+            <button class="action-button" data-action="add-project">+ Add Project</button>
           </div>
           <div class="table-wrapper">
             <table id="projects-table">
@@ -148,6 +149,7 @@
                   <th>Vendor Paid</th>
                   <th>Total Expense</th>
                   <th>Profit</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -159,6 +161,7 @@
           <div class="card-header">
             <h2>Event Cost Summary</h2>
             <p>Daily costs across multi-day projects.</p>
+            <button class="action-button" data-action="add-event">+ Add Event</button>
           </div>
           <div class="table-wrapper">
             <table id="events-table">
@@ -169,6 +172,7 @@
                   <th class="col-location">Location</th>
                   <th>Team Cost</th>
                   <th>Other Expenses</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -180,6 +184,7 @@
           <div class="card-header">
             <h2>Team Member Balances</h2>
             <p>Assigned events, total due, and payments tracked.</p>
+            <button class="action-button" data-action="add-team">+ Add Team Member</button>
           </div>
           <div class="table-wrapper">
             <table id="team-table">
@@ -191,6 +196,7 @@
                   <th>Total Due</th>
                   <th>Total Paid</th>
                   <th>Pending</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -210,6 +216,7 @@
       const demoData = {
         projects: [
           {
+            project_id: "demo-project-1",
             project_name: "Brand Launch Campaign",
             project_by: "Kite Studios",
             start_date: "2025-02-01",
@@ -220,6 +227,7 @@
             profit: 91500,
           },
           {
+            project_id: "demo-project-2",
             project_name: "TechVision Commercial",
             project_by: "Northwind Media",
             start_date: "2025-02-10",
@@ -230,6 +238,7 @@
             profit: 47000,
           },
           {
+            project_id: "demo-project-3",
             project_name: "Indie Feature: Neon Dreams",
             project_by: "BlueStone Films",
             start_date: "2025-02-18",
@@ -242,15 +251,17 @@
         ],
         events: [
           {
+            event_id: "demo-event-1",
             event_date: "2025-02-01",
-            project_id: "demo",
+            project_id: "demo-project-1",
             location: "Mumbai Studio",
             team_cost: 35000,
             other_expenses: 5000,
           },
           {
+            event_id: "demo-event-2",
             event_date: "2025-02-02",
-            project_id: "demo",
+            project_id: "demo-project-1",
             location: "Mumbai Outdoor",
             team_cost: 38000,
             other_expenses: 6500,
@@ -258,6 +269,7 @@
         ],
         teamMembers: [
           {
+            team_member_id: "demo-team-1",
             name: "Asha Nair",
             role: "Director",
             events_assigned: 2,
@@ -266,6 +278,7 @@
             pending_payment: 32000,
           },
           {
+            team_member_id: "demo-team-2",
             name: "Ravi Mehta",
             role: "Cinematographer",
             events_assigned: 2,
@@ -280,6 +293,128 @@
         const chip = document.getElementById("status-chip");
         chip.textContent = message;
         chip.classList.toggle("status-error", !ok);
+      };
+
+      const state = {
+        projects: [],
+        events: [],
+        teamMembers: [],
+      };
+
+      const modal = {
+        overlay: document.getElementById("modal-overlay"),
+        title: document.getElementById("modal-title"),
+        form: document.getElementById("modal-form"),
+        fields: document.getElementById("modal-fields"),
+        submit: document.getElementById("modal-submit"),
+      };
+
+      const formConfig = {
+        project: [
+          { name: "project_name", label: "Project Name", type: "text", required: true },
+          { name: "project_by", label: "Client", type: "text", required: true },
+          { name: "start_date", label: "Start Date", type: "date", required: true },
+          { name: "end_date", label: "End Date", type: "date", required: true },
+          { name: "location", label: "Location", type: "text", required: true },
+          { name: "project_amount", label: "Project Amount", type: "number", required: true },
+          { name: "notes", label: "Notes", type: "text", required: false },
+        ],
+        event: [
+          { name: "project_id", label: "Project", type: "select", required: true },
+          { name: "event_date", label: "Event Date", type: "date", required: true },
+          { name: "location", label: "Location", type: "text", required: true },
+        ],
+        team: [
+          { name: "name", label: "Name", type: "text", required: true },
+          { name: "role", label: "Role", type: "text", required: true },
+          { name: "notes", label: "Notes", type: "text", required: false },
+        ],
+      };
+
+      let activeModal = { type: null, id: null };
+
+      const openModal = (type, data = {}) => {
+        activeModal = { type, id: data.id ?? null };
+        modal.title.textContent =
+          type === "project"
+            ? "Project"
+            : type === "event"
+            ? "Event"
+            : "Team Member";
+        modal.fields.innerHTML = "";
+        formConfig[type].forEach((field) => {
+          const wrapper = document.createElement("label");
+          wrapper.className = "field";
+          wrapper.innerHTML = `<span>${field.label}</span>`;
+          let input;
+          if (field.type === "select") {
+            input = document.createElement("select");
+            state.projects.forEach((project) => {
+              const option = document.createElement("option");
+              option.value = project.project_id;
+              option.textContent = project.project_name;
+              input.appendChild(option);
+            });
+          } else {
+            input = document.createElement("input");
+            input.type = field.type;
+          }
+          input.name = field.name;
+          input.required = field.required;
+          if (data[field.name]) {
+            input.value = data[field.name];
+          }
+          wrapper.appendChild(input);
+          modal.fields.appendChild(wrapper);
+        });
+        modal.overlay.classList.add("open");
+      };
+
+      const closeModal = () => {
+        modal.overlay.classList.remove("open");
+        modal.form.reset();
+      };
+
+      const submitModal = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(modal.form);
+        const payload = Object.fromEntries(formData.entries());
+        if (payload.project_amount) {
+          payload.project_amount = Number(payload.project_amount);
+        }
+
+        const endpoint =
+          activeModal.type === "project"
+            ? "/api/projects"
+            : activeModal.type === "event"
+            ? "/api/events"
+            : "/api/team-members";
+
+        const method = activeModal.id ? "PUT" : "POST";
+        const url = activeModal.id ? `${endpoint}/${activeModal.id}` : endpoint;
+
+        await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        closeModal();
+        await loadData();
+      };
+
+      const confirmDelete = async (type, id) => {
+        if (!confirm("Delete this entry?")) {
+          return;
+        }
+        const endpoint =
+          type === "project"
+            ? "/api/projects"
+            : type === "event"
+            ? "/api/events"
+            : "/api/team-members";
+        await fetch(`${endpoint}/${id}`, { method: "DELETE" });
+        await loadData();
       };
 
       const updateKpis = (projects) => {
@@ -345,6 +480,10 @@
             fetch("/api/team-members").then((res) => res.json()),
           ]);
 
+          state.projects = projects;
+          state.events = events;
+          state.teamMembers = teamMembers;
+
           updateKpis(projects);
 
           renderRows("projects-table", projects, (row) => {
@@ -356,6 +495,10 @@
               <td>${formatter.format(row.vendor_paid)}</td>
               <td>${formatter.format(row.total_expense)}</td>
               <td class="profit">${formatter.format(row.profit)}</td>
+              <td class="actions">
+                <button data-edit="project" data-id="${row.project_id}">Edit</button>
+                <button data-delete="project" data-id="${row.project_id}">Delete</button>
+              </td>
             `;
           });
 
@@ -366,6 +509,10 @@
               <td class="col-location">${row.location}</td>
               <td>${formatter.format(row.team_cost)}</td>
               <td>${formatter.format(row.other_expenses)}</td>
+              <td class="actions">
+                <button data-edit="event" data-id="${row.event_id}">Edit</button>
+                <button data-delete="event" data-id="${row.event_id}">Delete</button>
+              </td>
             `;
           });
 
@@ -377,12 +524,19 @@
               <td>${formatter.format(row.total_due)}</td>
               <td>${formatter.format(row.total_paid)}</td>
               <td class="pending">${formatter.format(row.pending_payment)}</td>
+              <td class="actions">
+                <button data-edit="team" data-id="${row.team_member_id}">Edit</button>
+                <button data-delete="team" data-id="${row.team_member_id}">Delete</button>
+              </td>
             `;
           });
 
           setStatus("Live data loaded");
         } catch (error) {
           console.error(error);
+          state.projects = demoData.projects;
+          state.events = demoData.events;
+          state.teamMembers = demoData.teamMembers;
           updateKpis(demoData.projects);
 
           renderRows("projects-table", demoData.projects, (row) => {
@@ -394,6 +548,10 @@
               <td>${formatter.format(row.vendor_paid)}</td>
               <td>${formatter.format(row.total_expense)}</td>
               <td class="profit">${formatter.format(row.profit)}</td>
+              <td class="actions">
+                <button data-edit="project" data-id="${row.project_id ?? ""}">Edit</button>
+                <button data-delete="project" data-id="${row.project_id ?? ""}">Delete</button>
+              </td>
             `;
           });
 
@@ -404,6 +562,10 @@
               <td class="col-location">${row.location}</td>
               <td>${formatter.format(row.team_cost)}</td>
               <td>${formatter.format(row.other_expenses)}</td>
+              <td class="actions">
+                <button data-edit="event" data-id="${row.event_id ?? ""}">Edit</button>
+                <button data-delete="event" data-id="${row.event_id ?? ""}">Delete</button>
+              </td>
             `;
           });
 
@@ -415,12 +577,58 @@
               <td>${formatter.format(row.total_due)}</td>
               <td>${formatter.format(row.total_paid)}</td>
               <td class="pending">${formatter.format(row.pending_payment)}</td>
+              <td class="actions">
+                <button data-edit="team" data-id="${row.team_member_id ?? ""}">Edit</button>
+                <button data-delete="team" data-id="${row.team_member_id ?? ""}">Delete</button>
+              </td>
             `;
           });
 
           setStatus("Demo data loaded (offline)", false);
         }
       };
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+        if (target.dataset.action === "add-project") {
+          openModal("project");
+        }
+        if (target.dataset.action === "add-event") {
+          openModal("event");
+        }
+        if (target.dataset.action === "add-team") {
+          openModal("team");
+        }
+        if (target.dataset.edit) {
+          const id = target.dataset.id;
+          if (target.dataset.edit === "project") {
+            const project = state.projects.find((item) => item.project_id === id);
+            openModal("project", project ? { ...project, id } : {});
+            activeModal.id = id ?? null;
+          }
+          if (target.dataset.edit === "event") {
+            const eventItem = state.events.find((item) => item.event_id === id);
+            openModal("event", eventItem ? { ...eventItem, id } : {});
+            activeModal.id = id ?? null;
+          }
+          if (target.dataset.edit === "team") {
+            const member = state.teamMembers.find((item) => item.team_member_id === id);
+            openModal("team", member ? { ...member, id } : {});
+            activeModal.id = id ?? null;
+          }
+        }
+        if (target.dataset.delete) {
+          confirmDelete(target.dataset.delete, target.dataset.id);
+        }
+        if (target.id === "modal-close" || target.id === "modal-cancel" || target === modal.overlay) {
+          closeModal();
+        }
+      });
+
+      modal.form.addEventListener("submit", submitModal);
 
       loadData();
     </script>
@@ -432,5 +640,21 @@
       <button class="mobile-item">Crew</button>
       <button class="mobile-item">Ledger</button>
     </nav>
+
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modal-title">Project</h3>
+          <button id="modal-close">✕</button>
+        </div>
+        <form id="modal-form">
+          <div class="modal-fields" id="modal-fields"></div>
+          <div class="modal-actions">
+            <button type="button" class="ghost" id="modal-cancel">Cancel</button>
+            <button type="submit" id="modal-submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </body>
 </html>

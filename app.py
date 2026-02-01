@@ -5,7 +5,7 @@ import sqlite3
 from pathlib import Path
 from uuid import uuid4
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 
 BASE_DIR = Path(__file__).resolve().parent
 DB_DIR = BASE_DIR / "data"
@@ -147,6 +147,70 @@ def projects() -> tuple[str, int, dict]:
         ).fetchall()
     return jsonify(rows)
 
+@app.route("/api/projects", methods=["POST"])
+def create_project() -> tuple[str, int, dict]:
+    payload = request.get_json(force=True)
+    project_id = str(uuid4())
+    with get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO projects (
+                project_id, project_name, project_by, start_date, end_date, location, project_amount, notes
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                project_id,
+                payload.get("project_name"),
+                payload.get("project_by"),
+                payload.get("start_date"),
+                payload.get("end_date"),
+                payload.get("location"),
+                payload.get("project_amount", 0),
+                payload.get("notes"),
+            ),
+        )
+        conn.commit()
+    return jsonify({"project_id": project_id}), 201, {"Content-Type": "application/json"}
+
+
+@app.route("/api/projects/<project_id>", methods=["PUT"])
+def update_project(project_id: str) -> tuple[str, int, dict]:
+    payload = request.get_json(force=True)
+    with get_connection() as conn:
+        conn.execute(
+            """
+            UPDATE projects
+            SET project_name = ?,
+                project_by = ?,
+                start_date = ?,
+                end_date = ?,
+                location = ?,
+                project_amount = ?,
+                notes = ?
+            WHERE project_id = ?
+            """,
+            (
+                payload.get("project_name"),
+                payload.get("project_by"),
+                payload.get("start_date"),
+                payload.get("end_date"),
+                payload.get("location"),
+                payload.get("project_amount", 0),
+                payload.get("notes"),
+                project_id,
+            ),
+        )
+        conn.commit()
+    return jsonify({"status": "ok"}), 200, {"Content-Type": "application/json"}
+
+
+@app.route("/api/projects/<project_id>", methods=["DELETE"])
+def delete_project(project_id: str) -> tuple[str, int, dict]:
+    with get_connection() as conn:
+        conn.execute("DELETE FROM projects WHERE project_id = ?", (project_id,))
+        conn.commit()
+    return jsonify({"status": "deleted"}), 200, {"Content-Type": "application/json"}
+
 
 @app.route("/api/events")
 def events() -> tuple[str, int, dict]:
@@ -156,6 +220,57 @@ def events() -> tuple[str, int, dict]:
         ).fetchall()
     return jsonify(rows)
 
+@app.route("/api/events", methods=["POST"])
+def create_event() -> tuple[str, int, dict]:
+    payload = request.get_json(force=True)
+    event_id = str(uuid4())
+    with get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO project_events (event_id, project_id, event_date, location)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                event_id,
+                payload.get("project_id"),
+                payload.get("event_date"),
+                payload.get("location"),
+            ),
+        )
+        conn.commit()
+    return jsonify({"event_id": event_id}), 201, {"Content-Type": "application/json"}
+
+
+@app.route("/api/events/<event_id>", methods=["PUT"])
+def update_event(event_id: str) -> tuple[str, int, dict]:
+    payload = request.get_json(force=True)
+    with get_connection() as conn:
+        conn.execute(
+            """
+            UPDATE project_events
+            SET project_id = ?,
+                event_date = ?,
+                location = ?
+            WHERE event_id = ?
+            """,
+            (
+                payload.get("project_id"),
+                payload.get("event_date"),
+                payload.get("location"),
+                event_id,
+            ),
+        )
+        conn.commit()
+    return jsonify({"status": "ok"}), 200, {"Content-Type": "application/json"}
+
+
+@app.route("/api/events/<event_id>", methods=["DELETE"])
+def delete_event(event_id: str) -> tuple[str, int, dict]:
+    with get_connection() as conn:
+        conn.execute("DELETE FROM project_events WHERE event_id = ?", (event_id,))
+        conn.commit()
+    return jsonify({"status": "deleted"}), 200, {"Content-Type": "application/json"}
+
 
 @app.route("/api/team-members")
 def team_members() -> tuple[str, int, dict]:
@@ -164,6 +279,57 @@ def team_members() -> tuple[str, int, dict]:
             "SELECT * FROM team_member_balances ORDER BY name"
         ).fetchall()
     return jsonify(rows)
+
+@app.route("/api/team-members", methods=["POST"])
+def create_team_member() -> tuple[str, int, dict]:
+    payload = request.get_json(force=True)
+    team_member_id = str(uuid4())
+    with get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO team_members (team_member_id, name, role, notes)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                team_member_id,
+                payload.get("name"),
+                payload.get("role"),
+                payload.get("notes"),
+            ),
+        )
+        conn.commit()
+    return jsonify({"team_member_id": team_member_id}), 201, {"Content-Type": "application/json"}
+
+
+@app.route("/api/team-members/<team_member_id>", methods=["PUT"])
+def update_team_member(team_member_id: str) -> tuple[str, int, dict]:
+    payload = request.get_json(force=True)
+    with get_connection() as conn:
+        conn.execute(
+            """
+            UPDATE team_members
+            SET name = ?,
+                role = ?,
+                notes = ?
+            WHERE team_member_id = ?
+            """,
+            (
+                payload.get("name"),
+                payload.get("role"),
+                payload.get("notes"),
+                team_member_id,
+            ),
+        )
+        conn.commit()
+    return jsonify({"status": "ok"}), 200, {"Content-Type": "application/json"}
+
+
+@app.route("/api/team-members/<team_member_id>", methods=["DELETE"])
+def delete_team_member(team_member_id: str) -> tuple[str, int, dict]:
+    with get_connection() as conn:
+        conn.execute("DELETE FROM team_members WHERE team_member_id = ?", (team_member_id,))
+        conn.commit()
+    return jsonify({"status": "deleted"}), 200, {"Content-Type": "application/json"}
 
 
 @app.route("/api/projects/<project_id>/events")

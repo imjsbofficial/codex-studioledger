@@ -18,7 +18,7 @@ CREATE TABLE project_events (
   project_id TEXT NOT NULL,
   event_date TEXT NOT NULL,
   location TEXT NOT NULL,
-  FOREIGN KEY (project_id) REFERENCES projects (project_id)
+  FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE
 );
 
 CREATE TABLE team_members (
@@ -33,8 +33,8 @@ CREATE TABLE event_assignments (
   event_id TEXT NOT NULL,
   team_member_id TEXT NOT NULL,
   rate REAL NOT NULL,
-  FOREIGN KEY (event_id) REFERENCES project_events (event_id),
-  FOREIGN KEY (team_member_id) REFERENCES team_members (team_member_id)
+  FOREIGN KEY (event_id) REFERENCES project_events (event_id) ON DELETE CASCADE,
+  FOREIGN KEY (team_member_id) REFERENCES team_members (team_member_id) ON DELETE CASCADE
 );
 
 CREATE TABLE vendor_payments (
@@ -43,7 +43,7 @@ CREATE TABLE vendor_payments (
   payment_date TEXT NOT NULL,
   amount REAL NOT NULL,
   reference TEXT,
-  FOREIGN KEY (project_id) REFERENCES projects (project_id)
+  FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE
 );
 
 CREATE TABLE team_member_payments (
@@ -53,8 +53,8 @@ CREATE TABLE team_member_payments (
   payment_date TEXT NOT NULL,
   amount REAL NOT NULL,
   reference TEXT,
-  FOREIGN KEY (team_member_id) REFERENCES team_members (team_member_id),
-  FOREIGN KEY (event_id) REFERENCES project_events (event_id)
+  FOREIGN KEY (team_member_id) REFERENCES team_members (team_member_id) ON DELETE CASCADE,
+  FOREIGN KEY (event_id) REFERENCES project_events (event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE other_expenses (
@@ -65,8 +65,8 @@ CREATE TABLE other_expenses (
   amount REAL NOT NULL,
   category TEXT NOT NULL,
   notes TEXT,
-  FOREIGN KEY (project_id) REFERENCES projects (project_id),
-  FOREIGN KEY (event_id) REFERENCES project_events (event_id)
+  FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE,
+  FOREIGN KEY (event_id) REFERENCES project_events (event_id) ON DELETE CASCADE
 );
 
 CREATE VIEW event_cost_summary AS
