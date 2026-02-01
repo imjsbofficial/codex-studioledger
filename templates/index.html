@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Studio Ledger Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Production House</p>
+        <h1>Studio Ledger Dashboard</h1>
+        <p class="subtitle">
+          Track project profitability, event costs, and team member payments in one place.
+        </p>
+      </div>
+      <div class="status-chip" id="status-chip">Loading data…</div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="card-header">
+          <h2>Project Profitability</h2>
+          <p>Vendor payments vs. total expenses per project.</p>
+        </div>
+        <div class="table-wrapper">
+          <table id="projects-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Client</th>
+                <th>Dates</th>
+                <th>Location</th>
+                <th>Vendor Paid</th>
+                <th>Total Expense</th>
+                <th>Profit</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Event Cost Summary</h2>
+          <p>Daily costs across multi-day projects.</p>
+        </div>
+        <div class="table-wrapper">
+          <table id="events-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Project ID</th>
+                <th>Location</th>
+                <th>Team Cost</th>
+                <th>Other Expenses</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Team Member Balances</h2>
+          <p>Assigned events, total due, and payments tracked.</p>
+        </div>
+        <div class="table-wrapper">
+          <table id="team-table">
+            <thead>
+              <tr>
+                <th>Team Member</th>
+                <th>Role</th>
+                <th>Events Assigned</th>
+                <th>Total Due</th>
+                <th>Total Paid</th>
+                <th>Pending</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const formatter = new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      });
+
+      const setStatus = (message, ok = true) => {
+        const chip = document.getElementById("status-chip");
+        chip.textContent = message;
+        chip.classList.toggle("status-error", !ok);
+      };
+
+      const renderRows = (tableId, rows, renderRow) => {
+        const body = document.querySelector(`#${tableId} tbody`);
+        body.innerHTML = "";
+        rows.forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = renderRow(row);
+          body.appendChild(tr);
+        });
+      };
+
+      const loadData = async () => {
+        try {
+          const [projects, events, teamMembers] = await Promise.all([
+            fetch("/api/projects").then((res) => res.json()),
+            fetch("/api/events").then((res) => res.json()),
+            fetch("/api/team-members").then((res) => res.json()),
+          ]);
+
+          renderRows("projects-table", projects, (row) => {
+            return `
+              <td>${row.project_name}</td>
+              <td>${row.project_by}</td>
+              <td>${row.start_date} → ${row.end_date}</td>
+              <td>${row.location}</td>
+              <td>${formatter.format(row.vendor_paid)}</td>
+              <td>${formatter.format(row.total_expense)}</td>
+              <td class="profit">${formatter.format(row.profit)}</td>
+            `;
+          });
+
+          renderRows("events-table", events, (row) => {
+            return `
+              <td>${row.event_date}</td>
+              <td>${row.project_id}</td>
+              <td>${row.location}</td>
+              <td>${formatter.format(row.team_cost)}</td>
+              <td>${formatter.format(row.other_expenses)}</td>
+            `;
+          });
+
+          renderRows("team-table", teamMembers, (row) => {
+            return `
+              <td>${row.name}</td>
+              <td>${row.role ?? "—"}</td>
+              <td>${row.events_assigned}</td>
+              <td>${formatter.format(row.total_due)}</td>
+              <td>${formatter.format(row.total_paid)}</td>
+              <td class="pending">${formatter.format(row.pending_payment)}</td>
+            `;
+          });
+
+          setStatus("Live data loaded");
+        } catch (error) {
+          console.error(error);
+          setStatus("Failed to load data", false);
+        }
+      };
+
+      loadData();
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
-# Production House Ledger App (Schema + Views)
+# Production House Ledger App
 
-This repository contains a ready-to-run SQLite schema and reporting views for the Production House Ledger. It covers:
+This repository contains a ready-to-run SQLite schema, Flask API, and a lightweight dashboard UI for the Production House Ledger. It covers:
 
 - Single-day and multi-day projects (stored as events).
 - Per-event team member assignments and rates.
@@ -13,12 +13,22 @@ This repository contains a ready-to-run SQLite schema and reporting views for th
 
 - `schema.sql`: Database schema and reporting views.
 - `project_ledger_spec.md`: Business requirements and reporting definitions.
+- `app.py`: Flask API + dashboard UI.
+- `templates/index.html`: Dashboard layout.
+- `static/styles.css`: Dashboard styling.
 
-## Quick start (SQLite)
+## Quick start
 
 ```bash
-sqlite3 ledger.db < schema.sql
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python app.py
 ```
+
+Then open <http://localhost:5000> to view the dashboard.
+
+The app creates `data/ledger.db` on first run using `schema.sql` and seeds a small sample dataset.
 
 ## Example dashboard queries
 

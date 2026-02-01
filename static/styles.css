@@ -1,0 +1,127 @@
+:root {
+  color-scheme: light;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  background-color: #f5f6fb;
+  color: #1a1f36;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 32px 48px 48px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 12px;
+  margin: 0 0 8px;
+  color: #6a6f85;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+}
+
+.subtitle {
+  margin: 0;
+  color: #5a6076;
+  max-width: 520px;
+}
+
+.status-chip {
+  background: #e7f9ef;
+  color: #1a7f55;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.status-chip.status-error {
+  background: #ffe8e6;
+  color: #c81d25;
+}
+
+main {
+  display: grid;
+  gap: 24px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(12, 18, 38, 0.08);
+}
+
+.card-header {
+  margin-bottom: 16px;
+}
+
+.card-header h2 {
+  margin: 0 0 4px;
+}
+
+.card-header p {
+  margin: 0;
+  color: #6a6f85;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid #eef0f6;
+  font-size: 14px;
+}
+
+th {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  color: #6a6f85;
+}
+
+.profit {
+  color: #1a7f55;
+  font-weight: 600;
+}
+
+.pending {
+  color: #8a4b00;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  body {
+    padding: 24px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

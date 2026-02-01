@@ -70,19 +70,44 @@ CREATE TABLE other_expenses (
 );
 
 CREATE VIEW event_cost_summary AS
+WITH assignment_totals AS (
+  SELECT event_id, SUM(rate) AS team_cost
+  FROM event_assignments
+  GROUP BY event_id
+),
+expense_totals AS (
+  SELECT event_id, SUM(amount) AS other_expenses
+  FROM other_expenses
+  GROUP BY event_id
+)
 SELECT
   e.event_id,
   e.project_id,
   e.event_date,
   e.location,
-  COALESCE(SUM(a.rate), 0) AS team_cost,
-  COALESCE(SUM(x.amount), 0) AS other_expenses
+  COALESCE(a.team_cost, 0) AS team_cost,
+  COALESCE(x.other_expenses, 0) AS other_expenses
 FROM project_events e
-LEFT JOIN event_assignments a ON a.event_id = e.event_id
-LEFT JOIN other_expenses x ON x.event_id = e.event_id
-GROUP BY e.event_id, e.project_id, e.event_date, e.location;
+LEFT JOIN assignment_totals a ON a.event_id = e.event_id
+LEFT JOIN expense_totals x ON x.event_id = e.event_id;
 
 CREATE VIEW project_financials AS
+WITH vendor_totals AS (
+  SELECT project_id, SUM(amount) AS vendor_paid
+  FROM vendor_payments
+  GROUP BY project_id
+),
+team_totals AS (
+  SELECT e.project_id, SUM(a.rate) AS team_cost
+  FROM project_events e
+  JOIN event_assignments a ON a.event_id = e.event_id
+  GROUP BY e.project_id
+),
+expense_totals AS (
+  SELECT project_id, SUM(amount) AS other_expenses
+  FROM other_expenses
+  GROUP BY project_id
+)
 SELECT
   p.project_id,
   p.project_name,
@@ -91,35 +116,35 @@ SELECT
   p.end_date,
   p.location,
   p.project_amount,
-  COALESCE(SUM(v.amount), 0) AS vendor_paid,
-  COALESCE(SUM(a.rate), 0) AS team_cost,
-  COALESCE(SUM(x.amount), 0) AS other_expenses,
-  COALESCE(SUM(a.rate), 0) + COALESCE(SUM(x.amount), 0) AS total_expense,
-  COALESCE(SUM(v.amount), 0) - (COALESCE(SUM(a.rate), 0) + COALESCE(SUM(x.amount), 0)) AS profit
+  COALESCE(v.vendor_paid, 0) AS vendor_paid,
+  COALESCE(t.team_cost, 0) AS team_cost,
+  COALESCE(x.other_expenses, 0) AS other_expenses,
+  COALESCE(t.team_cost, 0) + COALESCE(x.other_expenses, 0) AS total_expense,
+  COALESCE(v.vendor_paid, 0) - (COALESCE(t.team_cost, 0) + COALESCE(x.other_expenses, 0)) AS profit
 FROM projects p
-LEFT JOIN vendor_payments v ON v.project_id = p.project_id
-LEFT JOIN project_events e ON e.project_id = p.project_id
-LEFT JOIN event_assignments a ON a.event_id = e.event_id
-LEFT JOIN other_expenses x ON x.project_id = p.project_id
-GROUP BY
-  p.project_id,
-  p.project_name,
-  p.project_by,
-  p.start_date,
-  p.end_date,
-  p.location,
-  p.project_amount;
+LEFT JOIN vendor_totals v ON v.project_id = p.project_id
+LEFT JOIN team_totals t ON t.project_id = p.project_id
+LEFT JOIN expense_totals x ON x.project_id = p.project_id;
 
 CREATE VIEW team_member_balances AS
+WITH assignment_totals AS (
+  SELECT team_member_id, COUNT(DISTINCT event_id) AS events_assigned, SUM(rate) AS total_due
+  FROM event_assignments
+  GROUP BY team_member_id
+),
+payment_totals AS (
+  SELECT team_member_id, SUM(amount) AS total_paid
+  FROM team_member_payments
+  GROUP BY team_member_id
+)
 SELECT
   tm.team_member_id,
   tm.name,
   tm.role,
-  COUNT(DISTINCT a.event_id) AS events_assigned,
-  COALESCE(SUM(a.rate), 0) AS total_due,
-  COALESCE(SUM(tp.amount), 0) AS total_paid,
-  COALESCE(SUM(a.rate), 0) - COALESCE(SUM(tp.amount), 0) AS pending_payment
+  COALESCE(a.events_assigned, 0) AS events_assigned,
+  COALESCE(a.total_due, 0) AS total_due,
+  COALESCE(p.total_paid, 0) AS total_paid,
+  COALESCE(a.total_due, 0) - COALESCE(p.total_paid, 0) AS pending_payment
 FROM team_members tm
-LEFT JOIN event_assignments a ON a.team_member_id = tm.team_member_id
-LEFT JOIN team_member_payments tp ON tp.team_member_id = tm.team_member_id
-GROUP BY tm.team_member_id, tm.name, tm.role;
+LEFT JOIN assignment_totals a ON a.team_member_id = tm.team_member_id
+LEFT JOIN payment_totals p ON p.team_member_id = tm.team_member_id;
