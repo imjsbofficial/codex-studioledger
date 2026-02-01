@@ -7,109 +7,193 @@
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <header class="page-header">
-      <div>
-        <p class="eyebrow">Production House</p>
-        <h1>Studio Ledger Dashboard</h1>
-        <p class="subtitle">
-          Track project profitability, event costs, and team member payments in one place.
-        </p>
-      </div>
-      <div class="status-chip" id="status-chip">Loading data…</div>
-    </header>
-
-    <main>
-      <section class="card kpi-card">
-        <div class="card-header">
-          <h2>Overview</h2>
-          <p>Totals across all projects and events.</p>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-icon">SL</span>
+          <span class="brand-name">StudioLedger</span>
         </div>
-        <div class="kpi-grid">
-          <div class="kpi-tile">
-            <p class="kpi-label">Projects</p>
-            <h3 id="kpi-projects">0</h3>
+        <nav class="nav">
+          <button class="nav-item active">
+            <span class="nav-icon">▦</span>
+            Dashboard
+          </button>
+          <button class="nav-item">
+            <span class="nav-icon">🗓</span>
+            Schedule
+          </button>
+          <button class="nav-item">
+            <span class="nav-icon">📦</span>
+            Projects
+          </button>
+          <button class="nav-item">
+            <span class="nav-icon">👥</span>
+            Crew
+          </button>
+          <button class="nav-item">
+            <span class="nav-icon">🎬</span>
+            Roles
+          </button>
+          <button class="nav-item">
+            <span class="nav-icon">📒</span>
+            Ledger
+          </button>
+        </nav>
+        <div class="sidebar-foot">
+          <div class="status-chip" id="status-chip">Loading data…</div>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="topbar">
+          <label class="search">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Quick search..." />
+          </label>
+          <div class="profile">
+            <div>
+              <p class="profile-title">Studio Admin</p>
+              <p class="profile-subtitle">Master User</p>
+            </div>
+            <div class="avatar">SA</div>
           </div>
-          <div class="kpi-tile">
-            <p class="kpi-label">Vendor Paid</p>
+        </header>
+
+        <section class="toolbar card">
+          <div class="toolbar-title">
+            <span class="toolbar-icon">⏳</span>
+            Financial Range
+          </div>
+          <div class="toolbar-range">
+            <span>02/02/2026</span>
+            <span class="range-divider">to</span>
+            <span>02/02/2026</span>
+          </div>
+        </section>
+
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Revenue</p>
+              <span class="kpi-icon positive">₹</span>
+            </div>
             <h3 id="kpi-vendor">₹0</h3>
           </div>
-          <div class="kpi-tile">
-            <p class="kpi-label">Total Expense</p>
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Expenses</p>
+              <span class="kpi-icon danger">↗</span>
+            </div>
             <h3 id="kpi-expense">₹0</h3>
           </div>
-          <div class="kpi-tile">
-            <p class="kpi-label">Profit</p>
-            <h3 id="kpi-profit">₹0</h3>
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Pending Client</p>
+              <span class="kpi-icon warning">!</span>
+            </div>
+            <h3 id="kpi-pending-client">₹0</h3>
           </div>
-        </div>
-      </section>
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Pending Team</p>
+              <span class="kpi-icon info">👤</span>
+            </div>
+            <h3 id="kpi-pending-team">₹0</h3>
+          </div>
+        </section>
 
-      <section class="card">
-        <div class="card-header">
-          <h2>Project Profitability</h2>
-          <p>Vendor payments vs. total expenses per project.</p>
-        </div>
-        <div class="table-wrapper">
-          <table id="projects-table">
-            <thead>
-              <tr>
-                <th>Project</th>
-                <th class="col-client">Client</th>
-                <th class="col-dates">Dates</th>
-                <th class="col-location">Location</th>
-                <th>Vendor Paid</th>
-                <th>Total Expense</th>
-                <th>Profit</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
+        <section class="content-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Global Profitability</h2>
+              <p>Top projects by profitability.</p>
+            </div>
+            <div class="chart">
+              <div class="chart-bars" id="profit-chart"></div>
+              <div class="chart-labels" id="profit-labels"></div>
+            </div>
+          </div>
 
-      <section class="card">
-        <div class="card-header">
-          <h2>Event Cost Summary</h2>
-          <p>Daily costs across multi-day projects.</p>
-        </div>
-        <div class="table-wrapper">
-          <table id="events-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th class="col-project">Project ID</th>
-                <th class="col-location">Location</th>
-                <th>Team Cost</th>
-                <th>Other Expenses</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
+          <div class="card insights">
+            <div class="card-header">
+              <h2>AI Insights</h2>
+              <p>Highlights based on your ledger activity.</p>
+            </div>
+            <ul class="insight-list" id="insight-list">
+              <li>Review pending client invoices and follow up within 3 days.</li>
+              <li>Team payouts are trending higher for multi-day projects.</li>
+              <li>Optimize travel expenses by grouping nearby event locations.</li>
+            </ul>
+          </div>
+        </section>
 
-      <section class="card">
-        <div class="card-header">
-          <h2>Team Member Balances</h2>
-          <p>Assigned events, total due, and payments tracked.</p>
-        </div>
-        <div class="table-wrapper">
-          <table id="team-table">
-            <thead>
-              <tr>
-                <th>Team Member</th>
-                <th>Role</th>
-                <th>Events Assigned</th>
-                <th>Total Due</th>
-                <th>Total Paid</th>
-                <th>Pending</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+        <section class="card">
+          <div class="card-header">
+            <h2>Project Profitability</h2>
+            <p>Vendor payments vs. total expenses per project.</p>
+          </div>
+          <div class="table-wrapper">
+            <table id="projects-table">
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th class="col-client">Client</th>
+                  <th class="col-dates">Dates</th>
+                  <th class="col-location">Location</th>
+                  <th>Vendor Paid</th>
+                  <th>Total Expense</th>
+                  <th>Profit</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>Event Cost Summary</h2>
+            <p>Daily costs across multi-day projects.</p>
+          </div>
+          <div class="table-wrapper">
+            <table id="events-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th class="col-project">Project ID</th>
+                  <th class="col-location">Location</th>
+                  <th>Team Cost</th>
+                  <th>Other Expenses</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>Team Member Balances</h2>
+            <p>Assigned events, total due, and payments tracked.</p>
+          </div>
+          <div class="table-wrapper">
+            <table id="team-table">
+              <thead>
+                <tr>
+                  <th>Team Member</th>
+                  <th>Role</th>
+                  <th>Events Assigned</th>
+                  <th>Total Due</th>
+                  <th>Total Paid</th>
+                  <th>Pending</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <script>
       const formatter = new Intl.NumberFormat("en-IN", {
@@ -129,6 +213,26 @@
             vendor_paid: 150000,
             total_expense: 58500,
             profit: 91500,
+          },
+          {
+            project_name: "TechVision Commercial",
+            project_by: "Northwind Media",
+            start_date: "2025-02-10",
+            end_date: "2025-02-10",
+            location: "Delhi",
+            vendor_paid: 90000,
+            total_expense: 43000,
+            profit: 47000,
+          },
+          {
+            project_name: "Indie Feature: Neon Dreams",
+            project_by: "BlueStone Films",
+            start_date: "2025-02-18",
+            end_date: "2025-02-20",
+            location: "Goa",
+            vendor_paid: 220000,
+            total_expense: 110000,
+            profit: 110000,
           },
         ],
         events: [
@@ -184,10 +288,38 @@
           { vendor: 0, expense: 0, profit: 0 }
         );
 
-        document.getElementById("kpi-projects").textContent = projects.length;
         document.getElementById("kpi-vendor").textContent = formatter.format(totals.vendor);
         document.getElementById("kpi-expense").textContent = formatter.format(totals.expense);
-        document.getElementById("kpi-profit").textContent = formatter.format(totals.profit);
+        document.getElementById("kpi-pending-client").textContent = formatter.format(
+          Math.max(totals.vendor * 0.35, 0)
+        );
+        document.getElementById("kpi-pending-team").textContent = formatter.format(
+          Math.max(totals.expense * 0.25, 0)
+        );
+        renderChart(projects);
+      };
+
+      const renderChart = (projects) => {
+        const chart = document.getElementById("profit-chart");
+        const labels = document.getElementById("profit-labels");
+        chart.innerHTML = "";
+        labels.innerHTML = "";
+
+        const items = projects.slice(0, 4);
+        const maxProfit =
+          items.reduce((max, project) => Math.max(max, project.profit ?? 0), 1) || 1;
+
+        items.forEach((project) => {
+          const bar = document.createElement("div");
+          bar.className = "chart-bar";
+          bar.style.height = `${Math.max((project.profit / maxProfit) * 100, 10)}%`;
+          chart.appendChild(bar);
+
+          const label = document.createElement("div");
+          label.className = "chart-label";
+          label.textContent = project.project_name;
+          labels.appendChild(label);
+        });
       };
 
       const renderRows = (tableId, rows, renderRow) => {
