@@ -68,6 +68,7 @@
             <span>02/02/2026</span>
             <span class="range-divider">to</span>
             <span>02/02/2026</span>
+            <button class="range-button">Update</button>
           </div>
         </section>
 
@@ -78,6 +79,7 @@
               <span class="kpi-icon positive">₹</span>
             </div>
             <h3 id="kpi-vendor">₹0</h3>
+            <p class="kpi-trend positive">▲ 12% vs last week</p>
           </div>
           <div class="kpi-card">
             <div class="kpi-meta">
@@ -85,6 +87,7 @@
               <span class="kpi-icon danger">↗</span>
             </div>
             <h3 id="kpi-expense">₹0</h3>
+            <p class="kpi-trend danger">▲ 8% vs last week</p>
           </div>
           <div class="kpi-card">
             <div class="kpi-meta">
@@ -92,6 +95,7 @@
               <span class="kpi-icon warning">!</span>
             </div>
             <h3 id="kpi-pending-client">₹0</h3>
+            <p class="kpi-trend warning">• 5 invoices due</p>
           </div>
           <div class="kpi-card">
             <div class="kpi-meta">
@@ -99,6 +103,7 @@
               <span class="kpi-icon info">👤</span>
             </div>
             <h3 id="kpi-pending-team">₹0</h3>
+            <p class="kpi-trend info">• 3 payouts pending</p>
           </div>
         </section>
 
@@ -106,7 +111,7 @@
           <div class="card">
             <div class="card-header">
               <h2>Global Profitability</h2>
-              <p>Top projects by profitability.</p>
+              <p>Profit vs total expenses per project.</p>
             </div>
             <div class="chart">
               <div class="chart-bars" id="profit-chart"></div>
@@ -120,9 +125,9 @@
               <p>Highlights based on your ledger activity.</p>
             </div>
             <ul class="insight-list" id="insight-list">
-              <li>Review pending client invoices and follow up within 3 days.</li>
-              <li>Team payouts are trending higher for multi-day projects.</li>
-              <li>Optimize travel expenses by grouping nearby event locations.</li>
+              <li>Cash flow is tight this week—prioritize ₹55k pending client invoices.</li>
+              <li>Multi-day shoots show higher travel costs; consolidate locations.</li>
+              <li>Upcoming payouts spike in 5 days—schedule vendor collections earlier.</li>
             </ul>
           </div>
         </section>
@@ -419,5 +424,13 @@
 
       loadData();
     </script>
+
+    <nav class="mobile-nav">
+      <button class="mobile-item active">Dashboard</button>
+      <button class="mobile-item">Schedule</button>
+      <button class="mobile-item">Projects</button>
+      <button class="mobile-item">Crew</button>
+      <button class="mobile-item">Ledger</button>
+    </nav>
   </body>
 </html>
