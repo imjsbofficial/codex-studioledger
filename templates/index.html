@@ -488,14 +488,14 @@
 
           renderRows("projects-table", projects, (row) => {
             return `
-              <td>${row.project_name}</td>
-              <td class="col-client">${row.project_by}</td>
-              <td class="col-dates">${row.start_date} → ${row.end_date}</td>
-              <td class="col-location">${row.location}</td>
-              <td>${formatter.format(row.vendor_paid)}</td>
-              <td>${formatter.format(row.total_expense)}</td>
-              <td class="profit">${formatter.format(row.profit)}</td>
-              <td class="actions">
+              <td data-label="Project">${row.project_name}</td>
+              <td class="col-client" data-label="Client">${row.project_by}</td>
+              <td class="col-dates" data-label="Dates">${row.start_date} → ${row.end_date}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Vendor Paid">${formatter.format(row.vendor_paid)}</td>
+              <td data-label="Total Expense">${formatter.format(row.total_expense)}</td>
+              <td class="profit" data-label="Profit">${formatter.format(row.profit)}</td>
+              <td class="actions" data-label="Actions">
                 <button data-edit="project" data-id="${row.project_id}">Edit</button>
                 <button data-delete="project" data-id="${row.project_id}">Delete</button>
               </td>
@@ -504,12 +504,12 @@
 
           renderRows("events-table", events, (row) => {
             return `
-              <td>${row.event_date}</td>
-              <td class="col-project">${row.project_id}</td>
-              <td class="col-location">${row.location}</td>
-              <td>${formatter.format(row.team_cost)}</td>
-              <td>${formatter.format(row.other_expenses)}</td>
-              <td class="actions">
+              <td data-label="Date">${row.event_date}</td>
+              <td class="col-project" data-label="Project ID">${row.project_id}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Team Cost">${formatter.format(row.team_cost)}</td>
+              <td data-label="Other Expenses">${formatter.format(row.other_expenses)}</td>
+              <td class="actions" data-label="Actions">
                 <button data-edit="event" data-id="${row.event_id}">Edit</button>
                 <button data-delete="event" data-id="${row.event_id}">Delete</button>
               </td>
@@ -518,13 +518,13 @@
 
           renderRows("team-table", teamMembers, (row) => {
             return `
-              <td>${row.name}</td>
-              <td>${row.role ?? "—"}</td>
-              <td>${row.events_assigned}</td>
-              <td>${formatter.format(row.total_due)}</td>
-              <td>${formatter.format(row.total_paid)}</td>
-              <td class="pending">${formatter.format(row.pending_payment)}</td>
-              <td class="actions">
+              <td data-label="Team Member">${row.name}</td>
+              <td data-label="Role">${row.role ?? "—"}</td>
+              <td data-label="Events Assigned">${row.events_assigned}</td>
+              <td data-label="Total Due">${formatter.format(row.total_due)}</td>
+              <td data-label="Total Paid">${formatter.format(row.total_paid)}</td>
+              <td class="pending" data-label="Pending">${formatter.format(row.pending_payment)}</td>
+              <td class="actions" data-label="Actions">
                 <button data-edit="team" data-id="${row.team_member_id}">Edit</button>
                 <button data-delete="team" data-id="${row.team_member_id}">Delete</button>
               </td>
@@ -541,14 +541,14 @@
 
           renderRows("projects-table", demoData.projects, (row) => {
             return `
-              <td>${row.project_name}</td>
-              <td class="col-client">${row.project_by}</td>
-              <td class="col-dates">${row.start_date} → ${row.end_date}</td>
-              <td class="col-location">${row.location}</td>
-              <td>${formatter.format(row.vendor_paid)}</td>
-              <td>${formatter.format(row.total_expense)}</td>
-              <td class="profit">${formatter.format(row.profit)}</td>
-              <td class="actions">
+              <td data-label="Project">${row.project_name}</td>
+              <td class="col-client" data-label="Client">${row.project_by}</td>
+              <td class="col-dates" data-label="Dates">${row.start_date} → ${row.end_date}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Vendor Paid">${formatter.format(row.vendor_paid)}</td>
+              <td data-label="Total Expense">${formatter.format(row.total_expense)}</td>
+              <td class="profit" data-label="Profit">${formatter.format(row.profit)}</td>
+              <td class="actions" data-label="Actions">
                 <button data-edit="project" data-id="${row.project_id ?? ""}">Edit</button>
                 <button data-delete="project" data-id="${row.project_id ?? ""}">Delete</button>
               </td>
@@ -557,12 +557,12 @@
 
           renderRows("events-table", demoData.events, (row) => {
             return `
-              <td>${row.event_date}</td>
-              <td class="col-project">${row.project_id}</td>
-              <td class="col-location">${row.location}</td>
-              <td>${formatter.format(row.team_cost)}</td>
-              <td>${formatter.format(row.other_expenses)}</td>
-              <td class="actions">
+              <td data-label="Date">${row.event_date}</td>
+              <td class="col-project" data-label="Project ID">${row.project_id}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Team Cost">${formatter.format(row.team_cost)}</td>
+              <td data-label="Other Expenses">${formatter.format(row.other_expenses)}</td>
+              <td class="actions" data-label="Actions">
                 <button data-edit="event" data-id="${row.event_id ?? ""}">Edit</button>
                 <button data-delete="event" data-id="${row.event_id ?? ""}">Delete</button>
               </td>
@@ -571,13 +571,13 @@
 
           renderRows("team-table", demoData.teamMembers, (row) => {
             return `
-              <td>${row.name}</td>
-              <td>${row.role ?? "—"}</td>
-              <td>${row.events_assigned}</td>
-              <td>${formatter.format(row.total_due)}</td>
-              <td>${formatter.format(row.total_paid)}</td>
-              <td class="pending">${formatter.format(row.pending_payment)}</td>
-              <td class="actions">
+              <td data-label="Team Member">${row.name}</td>
+              <td data-label="Role">${row.role ?? "—"}</td>
+              <td data-label="Events Assigned">${row.events_assigned}</td>
+              <td data-label="Total Due">${formatter.format(row.total_due)}</td>
+              <td data-label="Total Paid">${formatter.format(row.total_paid)}</td>
+              <td class="pending" data-label="Pending">${formatter.format(row.pending_payment)}</td>
+              <td class="actions" data-label="Actions">
                 <button data-edit="team" data-id="${row.team_member_id ?? ""}">Edit</button>
                 <button data-delete="team" data-id="${row.team_member_id ?? ""}">Delete</button>
               </td>

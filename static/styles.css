@@ -569,7 +569,45 @@ th {
   }
 
   table {
-    min-width: 640px;
+    min-width: 100%;
+    border: 0;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    background: #ffffff;
+    border: 1px solid #eef0f6;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+
+  td {
+    border: none;
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6a6f85;
+  }
+
+  .actions {
+    justify-content: flex-end;
   }
 
   .col-client,

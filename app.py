@@ -15,6 +15,11 @@ SCHEMA_PATH = BASE_DIR / "schema.sql"
 app = Flask(__name__)
 
 
+@app.before_request
+def ensure_database() -> None:
+    initialize_database()
+
+
 def dict_factory(cursor: sqlite3.Cursor, row: sqlite3.Row) -> dict:
     return {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
 
