@@ -166,6 +166,10 @@ body {
   box-shadow: 0 10px 24px rgba(19, 24, 43, 0.08);
 }
 
+.is-hidden {
+  display: none !important;
+}
+
 .card-header {
   margin-bottom: 16px;
 }

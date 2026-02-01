@@ -14,27 +14,27 @@
           <span class="brand-name">StudioLedger</span>
         </div>
         <nav class="nav">
-          <button class="nav-item active">
+          <button class="nav-item active" data-section="dashboard">
             <span class="nav-icon">▦</span>
             Dashboard
           </button>
-          <button class="nav-item">
+          <button class="nav-item" data-section="schedule">
             <span class="nav-icon">🗓</span>
             Schedule
           </button>
-          <button class="nav-item">
+          <button class="nav-item" data-section="projects">
             <span class="nav-icon">📦</span>
             Projects
           </button>
-          <button class="nav-item">
+          <button class="nav-item" data-section="crew">
             <span class="nav-icon">👥</span>
             Crew
           </button>
-          <button class="nav-item">
+          <button class="nav-item" data-section="roles">
             <span class="nav-icon">🎬</span>
             Roles
           </button>
-          <button class="nav-item">
+          <button class="nav-item" data-section="ledger">
             <span class="nav-icon">📒</span>
             Ledger
           </button>
@@ -59,7 +59,7 @@
           </div>
         </header>
 
-        <section class="toolbar card">
+        <section class="toolbar card" data-page="dashboard">
           <div class="toolbar-title">
             <span class="toolbar-icon">⏳</span>
             Financial Range
@@ -72,7 +72,7 @@
           </div>
         </section>
 
-        <section class="kpi-grid">
+        <section class="kpi-grid" data-page="dashboard">
           <div class="kpi-card">
             <div class="kpi-meta">
               <p>Revenue</p>
@@ -107,7 +107,7 @@
           </div>
         </section>
 
-        <section class="content-grid">
+        <section class="content-grid" data-page="dashboard">
           <div class="card">
             <div class="card-header">
               <h2>Global Profitability</h2>
@@ -132,7 +132,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-page="projects">
           <div class="card-header">
             <h2>Project Profitability</h2>
             <p>Vendor payments vs. total expenses per project.</p>
@@ -157,7 +157,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-page="schedule">
           <div class="card-header">
             <h2>Event Cost Summary</h2>
             <p>Daily costs across multi-day projects.</p>
@@ -180,7 +180,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-page="crew">
           <div class="card-header">
             <h2>Team Member Balances</h2>
             <p>Assigned events, total due, and payments tracked.</p>
@@ -593,6 +593,9 @@
         if (!(target instanceof HTMLElement)) {
           return;
         }
+        if (target.dataset.section) {
+          setActiveSection(target.dataset.section);
+        }
         if (target.dataset.action === "add-project") {
           openModal("project");
         }
@@ -630,15 +633,33 @@
 
       modal.form.addEventListener("submit", submitModal);
 
+      const setActiveSection = (section) => {
+        document.querySelectorAll("[data-page]").forEach((element) => {
+          if (section === "dashboard") {
+            element.classList.remove("is-hidden");
+            return;
+          }
+          const shouldShow = element.dataset.page === section;
+          element.classList.toggle("is-hidden", !shouldShow);
+        });
+
+        document.querySelectorAll("[data-section]").forEach((button) => {
+          if (!(button instanceof HTMLElement)) {
+            return;
+          }
+          button.classList.toggle("active", button.dataset.section === section);
+        });
+      };
+
       loadData();
     </script>
 
     <nav class="mobile-nav">
-      <button class="mobile-item active">Dashboard</button>
-      <button class="mobile-item">Schedule</button>
-      <button class="mobile-item">Projects</button>
-      <button class="mobile-item">Crew</button>
-      <button class="mobile-item">Ledger</button>
+      <button class="mobile-item active" data-section="dashboard">Dashboard</button>
+      <button class="mobile-item" data-section="schedule">Schedule</button>
+      <button class="mobile-item" data-section="projects">Projects</button>
+      <button class="mobile-item" data-section="crew">Crew</button>
+      <button class="mobile-item" data-section="ledger">Ledger</button>
     </nav>
 
     <div class="modal-overlay" id="modal-overlay">
