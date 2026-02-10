@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Studio Ledger Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-icon">SL</span>
+          <span class="brand-name">StudioLedger</span>
+        </div>
+        <nav class="nav">
+          <button class="nav-item active" data-section="dashboard">
+            <span class="nav-icon">▦</span>
+            Dashboard
+          </button>
+          <button class="nav-item" data-section="schedule">
+            <span class="nav-icon">🗓</span>
+            Schedule
+          </button>
+          <button class="nav-item" data-section="projects">
+            <span class="nav-icon">📦</span>
+            Projects
+          </button>
+          <button class="nav-item" data-section="crew">
+            <span class="nav-icon">👥</span>
+            Crew
+          </button>
+          <button class="nav-item" data-section="roles">
+            <span class="nav-icon">🎬</span>
+            Roles
+          </button>
+          <button class="nav-item" data-section="ledger">
+            <span class="nav-icon">📒</span>
+            Ledger
+          </button>
+        </nav>
+        <div class="sidebar-foot">
+          <div class="status-chip" id="status-chip">Loading data…</div>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="topbar">
+          <label class="search">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Quick search..." />
+          </label>
+          <div class="profile">
+            <div>
+              <p class="profile-title">Studio Admin</p>
+              <p class="profile-subtitle">Master User</p>
+            </div>
+            <div class="avatar">SA</div>
+          </div>
+        </header>
+
+        <section class="toolbar card" data-page="dashboard">
+          <div class="toolbar-title">
+            <span class="toolbar-icon">⏳</span>
+            Financial Range
+          </div>
+          <div class="toolbar-range">
+            <span>02/02/2026</span>
+            <span class="range-divider">to</span>
+            <span>02/02/2026</span>
+            <button class="range-button">Update</button>
+          </div>
+        </section>
+
+        <section class="kpi-grid" data-page="dashboard">
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Revenue</p>
+              <span class="kpi-icon positive">₹</span>
+            </div>
+            <h3 id="kpi-vendor">₹0</h3>
+            <p class="kpi-trend positive">▲ 12% vs last week</p>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Expenses</p>
+              <span class="kpi-icon danger">↗</span>
+            </div>
+            <h3 id="kpi-expense">₹0</h3>
+            <p class="kpi-trend danger">▲ 8% vs last week</p>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Pending Client</p>
+              <span class="kpi-icon warning">!</span>
+            </div>
+            <h3 id="kpi-pending-client">₹0</h3>
+            <p class="kpi-trend warning">• 5 invoices due</p>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-meta">
+              <p>Pending Team</p>
+              <span class="kpi-icon info">👤</span>
+            </div>
+            <h3 id="kpi-pending-team">₹0</h3>
+            <p class="kpi-trend info">• 3 payouts pending</p>
+          </div>
+        </section>
+
+        <section class="content-grid" data-page="dashboard">
+          <div class="card">
+            <div class="card-header">
+              <h2>Global Profitability</h2>
+              <p>Profit vs total expenses per project.</p>
+            </div>
+            <div class="chart">
+              <div class="chart-bars" id="profit-chart"></div>
+              <div class="chart-labels" id="profit-labels"></div>
+            </div>
+          </div>
+
+          <div class="card insights">
+            <div class="card-header">
+              <h2>AI Insights</h2>
+              <p>Highlights based on your ledger activity.</p>
+            </div>
+            <ul class="insight-list" id="insight-list">
+              <li>Cash flow is tight this week—prioritize ₹55k pending client invoices.</li>
+              <li>Multi-day shoots show higher travel costs; consolidate locations.</li>
+              <li>Upcoming payouts spike in 5 days—schedule vendor collections earlier.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="card" data-page="projects">
+          <div class="card-header">
+            <h2>Project Profitability</h2>
+            <p>Vendor payments vs. total expenses per project.</p>
+            <button class="action-button" data-action="add-project">+ Add Project</button>
+          </div>
+          <div class="table-wrapper">
+            <table id="projects-table">
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th class="col-client">Client</th>
+                  <th class="col-dates">Dates</th>
+                  <th class="col-location">Location</th>
+                  <th>Vendor Paid</th>
+                  <th>Total Expense</th>
+                  <th>Profit</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" data-page="schedule">
+          <div class="card-header">
+            <h2>Event Cost Summary</h2>
+            <p>Daily costs across multi-day projects.</p>
+            <button class="action-button" data-action="add-event">+ Add Event</button>
+          </div>
+          <div class="table-wrapper">
+            <table id="events-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th class="col-project">Project ID</th>
+                  <th class="col-location">Location</th>
+                  <th>Team Cost</th>
+                  <th>Other Expenses</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" data-page="crew">
+          <div class="card-header">
+            <h2>Team Member Balances</h2>
+            <p>Assigned events, total due, and payments tracked.</p>
+            <button class="action-button" data-action="add-team">+ Add Team Member</button>
+          </div>
+          <div class="table-wrapper">
+            <table id="team-table">
+              <thead>
+                <tr>
+                  <th>Team Member</th>
+                  <th>Role</th>
+                  <th>Events Assigned</th>
+                  <th>Total Due</th>
+                  <th>Total Paid</th>
+                  <th>Pending</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const formatter = new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      });
+
+      const demoData = {
+        projects: [
+          {
+            project_id: "demo-project-1",
+            project_name: "Brand Launch Campaign",
+            project_by: "Kite Studios",
+            start_date: "2025-02-01",
+            end_date: "2025-02-02",
+            location: "Mumbai",
+            vendor_paid: 150000,
+            total_expense: 58500,
+            profit: 91500,
+          },
+          {
+            project_id: "demo-project-2",
+            project_name: "TechVision Commercial",
+            project_by: "Northwind Media",
+            start_date: "2025-02-10",
+            end_date: "2025-02-10",
+            location: "Delhi",
+            vendor_paid: 90000,
+            total_expense: 43000,
+            profit: 47000,
+          },
+          {
+            project_id: "demo-project-3",
+            project_name: "Indie Feature: Neon Dreams",
+            project_by: "BlueStone Films",
+            start_date: "2025-02-18",
+            end_date: "2025-02-20",
+            location: "Goa",
+            vendor_paid: 220000,
+            total_expense: 110000,
+            profit: 110000,
+          },
+        ],
+        events: [
+          {
+            event_id: "demo-event-1",
+            event_date: "2025-02-01",
+            project_id: "demo-project-1",
+            location: "Mumbai Studio",
+            team_cost: 35000,
+            other_expenses: 5000,
+          },
+          {
+            event_id: "demo-event-2",
+            event_date: "2025-02-02",
+            project_id: "demo-project-1",
+            location: "Mumbai Outdoor",
+            team_cost: 38000,
+            other_expenses: 6500,
+          },
+        ],
+        teamMembers: [
+          {
+            team_member_id: "demo-team-1",
+            name: "Asha Nair",
+            role: "Director",
+            events_assigned: 2,
+            total_due: 42000,
+            total_paid: 10000,
+            pending_payment: 32000,
+          },
+          {
+            team_member_id: "demo-team-2",
+            name: "Ravi Mehta",
+            role: "Cinematographer",
+            events_assigned: 2,
+            total_due: 31000,
+            total_paid: 8000,
+            pending_payment: 23000,
+          },
+        ],
+      };
+
+      const setStatus = (message, ok = true) => {
+        const chip = document.getElementById("status-chip");
+        chip.textContent = message;
+        chip.classList.toggle("status-error", !ok);
+      };
+
+      const state = {
+        projects: [],
+        events: [],
+        teamMembers: [],
+      };
+
+      const modal = {
+        overlay: document.getElementById("modal-overlay"),
+        title: document.getElementById("modal-title"),
+        form: document.getElementById("modal-form"),
+        fields: document.getElementById("modal-fields"),
+        submit: document.getElementById("modal-submit"),
+      };
+
+      const formConfig = {
+        project: [
+          { name: "project_name", label: "Project Name", type: "text", required: true },
+          { name: "project_by", label: "Client", type: "text", required: true },
+          { name: "start_date", label: "Start Date", type: "date", required: true },
+          { name: "end_date", label: "End Date", type: "date", required: true },
+          { name: "location", label: "Location", type: "text", required: true },
+          { name: "project_amount", label: "Project Amount", type: "number", required: true },
+          { name: "notes", label: "Notes", type: "text", required: false },
+        ],
+        event: [
+          { name: "project_id", label: "Project", type: "select", required: true },
+          { name: "event_date", label: "Event Date", type: "date", required: true },
+          { name: "location", label: "Location", type: "text", required: true },
+        ],
+        team: [
+          { name: "name", label: "Name", type: "text", required: true },
+          { name: "role", label: "Role", type: "text", required: true },
+          { name: "notes", label: "Notes", type: "text", required: false },
+        ],
+      };
+
+      let activeModal = { type: null, id: null };
+
+      const openModal = (type, data = {}) => {
+        activeModal = { type, id: data.id ?? null };
+        modal.title.textContent =
+          type === "project"
+            ? "Project"
+            : type === "event"
+            ? "Event"
+            : "Team Member";
+        modal.fields.innerHTML = "";
+        formConfig[type].forEach((field) => {
+          const wrapper = document.createElement("label");
+          wrapper.className = "field";
+          wrapper.innerHTML = `<span>${field.label}</span>`;
+          let input;
+          if (field.type === "select") {
+            input = document.createElement("select");
+            state.projects.forEach((project) => {
+              const option = document.createElement("option");
+              option.value = project.project_id;
+              option.textContent = project.project_name;
+              input.appendChild(option);
+            });
+          } else {
+            input = document.createElement("input");
+            input.type = field.type;
+          }
+          input.name = field.name;
+          input.required = field.required;
+          if (data[field.name]) {
+            input.value = data[field.name];
+          }
+          wrapper.appendChild(input);
+          modal.fields.appendChild(wrapper);
+        });
+        modal.overlay.classList.add("open");
+      };
+
+      const closeModal = () => {
+        modal.overlay.classList.remove("open");
+        modal.form.reset();
+      };
+
+      const submitModal = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(modal.form);
+        const payload = Object.fromEntries(formData.entries());
+        if (payload.project_amount) {
+          payload.project_amount = Number(payload.project_amount);
+        }
+
+        const endpoint =
+          activeModal.type === "project"
+            ? "/api/projects"
+            : activeModal.type === "event"
+            ? "/api/events"
+            : "/api/team-members";
+
+        const method = activeModal.id ? "PUT" : "POST";
+        const url = activeModal.id ? `${endpoint}/${activeModal.id}` : endpoint;
+
+        await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        closeModal();
+        await loadData();
+      };
+
+      const confirmDelete = async (type, id) => {
+        if (!confirm("Delete this entry?")) {
+          return;
+        }
+        const endpoint =
+          type === "project"
+            ? "/api/projects"
+            : type === "event"
+            ? "/api/events"
+            : "/api/team-members";
+        await fetch(`${endpoint}/${id}`, { method: "DELETE" });
+        await loadData();
+      };
+
+      const updateKpis = (projects) => {
+        const totals = projects.reduce(
+          (acc, project) => {
+            acc.vendor += project.vendor_paid ?? 0;
+            acc.expense += project.total_expense ?? 0;
+            acc.profit += project.profit ?? 0;
+            return acc;
+          },
+          { vendor: 0, expense: 0, profit: 0 }
+        );
+
+        document.getElementById("kpi-vendor").textContent = formatter.format(totals.vendor);
+        document.getElementById("kpi-expense").textContent = formatter.format(totals.expense);
+        document.getElementById("kpi-pending-client").textContent = formatter.format(
+          Math.max(totals.vendor * 0.35, 0)
+        );
+        document.getElementById("kpi-pending-team").textContent = formatter.format(
+          Math.max(totals.expense * 0.25, 0)
+        );
+        renderChart(projects);
+      };
+
+      const renderChart = (projects) => {
+        const chart = document.getElementById("profit-chart");
+        const labels = document.getElementById("profit-labels");
+        chart.innerHTML = "";
+        labels.innerHTML = "";
+
+        const items = projects.slice(0, 4);
+        const maxProfit =
+          items.reduce((max, project) => Math.max(max, project.profit ?? 0), 1) || 1;
+
+        items.forEach((project) => {
+          const bar = document.createElement("div");
+          bar.className = "chart-bar";
+          bar.style.height = `${Math.max((project.profit / maxProfit) * 100, 10)}%`;
+          chart.appendChild(bar);
+
+          const label = document.createElement("div");
+          label.className = "chart-label";
+          label.textContent = project.project_name;
+          labels.appendChild(label);
+        });
+      };
+
+      const renderRows = (tableId, rows, renderRow) => {
+        const body = document.querySelector(`#${tableId} tbody`);
+        body.innerHTML = "";
+        rows.forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = renderRow(row);
+          body.appendChild(tr);
+        });
+      };
+
+      const loadData = async () => {
+        try {
+          const [projects, events, teamMembers] = await Promise.all([
+            fetch("/api/projects").then((res) => res.json()),
+            fetch("/api/events").then((res) => res.json()),
+            fetch("/api/team-members").then((res) => res.json()),
+          ]);
+
+          state.projects = projects;
+          state.events = events;
+          state.teamMembers = teamMembers;
+
+          updateKpis(projects);
+
+          renderRows("projects-table", projects, (row) => {
+            return `
+              <td data-label="Project">${row.project_name}</td>
+              <td class="col-client" data-label="Client">${row.project_by}</td>
+              <td class="col-dates" data-label="Dates">${row.start_date} → ${row.end_date}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Vendor Paid">${formatter.format(row.vendor_paid)}</td>
+              <td data-label="Total Expense">${formatter.format(row.total_expense)}</td>
+              <td class="profit" data-label="Profit">${formatter.format(row.profit)}</td>
+              <td class="actions" data-label="Actions">
+                <button data-edit="project" data-id="${row.project_id}">Edit</button>
+                <button data-delete="project" data-id="${row.project_id}">Delete</button>
+              </td>
+            `;
+          });
+
+          renderRows("events-table", events, (row) => {
+            return `
+              <td data-label="Date">${row.event_date}</td>
+              <td class="col-project" data-label="Project ID">${row.project_id}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Team Cost">${formatter.format(row.team_cost)}</td>
+              <td data-label="Other Expenses">${formatter.format(row.other_expenses)}</td>
+              <td class="actions" data-label="Actions">
+                <button data-edit="event" data-id="${row.event_id}">Edit</button>
+                <button data-delete="event" data-id="${row.event_id}">Delete</button>
+              </td>
+            `;
+          });
+
+          renderRows("team-table", teamMembers, (row) => {
+            return `
+              <td data-label="Team Member">${row.name}</td>
+              <td data-label="Role">${row.role ?? "—"}</td>
+              <td data-label="Events Assigned">${row.events_assigned}</td>
+              <td data-label="Total Due">${formatter.format(row.total_due)}</td>
+              <td data-label="Total Paid">${formatter.format(row.total_paid)}</td>
+              <td class="pending" data-label="Pending">${formatter.format(row.pending_payment)}</td>
+              <td class="actions" data-label="Actions">
+                <button data-edit="team" data-id="${row.team_member_id}">Edit</button>
+                <button data-delete="team" data-id="${row.team_member_id}">Delete</button>
+              </td>
+            `;
+          });
+
+          setStatus("Live data loaded");
+        } catch (error) {
+          console.error(error);
+          state.projects = demoData.projects;
+          state.events = demoData.events;
+          state.teamMembers = demoData.teamMembers;
+          updateKpis(demoData.projects);
+
+          renderRows("projects-table", demoData.projects, (row) => {
+            return `
+              <td data-label="Project">${row.project_name}</td>
+              <td class="col-client" data-label="Client">${row.project_by}</td>
+              <td class="col-dates" data-label="Dates">${row.start_date} → ${row.end_date}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Vendor Paid">${formatter.format(row.vendor_paid)}</td>
+              <td data-label="Total Expense">${formatter.format(row.total_expense)}</td>
+              <td class="profit" data-label="Profit">${formatter.format(row.profit)}</td>
+              <td class="actions" data-label="Actions">
+                <button data-edit="project" data-id="${row.project_id ?? ""}">Edit</button>
+                <button data-delete="project" data-id="${row.project_id ?? ""}">Delete</button>
+              </td>
+            `;
+          });
+
+          renderRows("events-table", demoData.events, (row) => {
+            return `
+              <td data-label="Date">${row.event_date}</td>
+              <td class="col-project" data-label="Project ID">${row.project_id}</td>
+              <td class="col-location" data-label="Location">${row.location}</td>
+              <td data-label="Team Cost">${formatter.format(row.team_cost)}</td>
+              <td data-label="Other Expenses">${formatter.format(row.other_expenses)}</td>
+              <td class="actions" data-label="Actions">
+                <button data-edit="event" data-id="${row.event_id ?? ""}">Edit</button>
+                <button data-delete="event" data-id="${row.event_id ?? ""}">Delete</button>
+              </td>
+            `;
+          });
+
+          renderRows("team-table", demoData.teamMembers, (row) => {
+            return `
+              <td data-label="Team Member">${row.name}</td>
+              <td data-label="Role">${row.role ?? "—"}</td>
+              <td data-label="Events Assigned">${row.events_assigned}</td>
+              <td data-label="Total Due">${formatter.format(row.total_due)}</td>
+              <td data-label="Total Paid">${formatter.format(row.total_paid)}</td>
+              <td class="pending" data-label="Pending">${formatter.format(row.pending_payment)}</td>
+              <td class="actions" data-label="Actions">
+                <button data-edit="team" data-id="${row.team_member_id ?? ""}">Edit</button>
+                <button data-delete="team" data-id="${row.team_member_id ?? ""}">Delete</button>
+              </td>
+            `;
+          });
+
+          setStatus("Demo data loaded (offline)", false);
+        }
+      };
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+        if (target.dataset.section) {
+          setActiveSection(target.dataset.section);
+        }
+        if (target.dataset.action === "add-project") {
+          openModal("project");
+        }
+        if (target.dataset.action === "add-event") {
+          openModal("event");
+        }
+        if (target.dataset.action === "add-team") {
+          openModal("team");
+        }
+        if (target.dataset.edit) {
+          const id = target.dataset.id;
+          if (target.dataset.edit === "project") {
+            const project = state.projects.find((item) => item.project_id === id);
+            openModal("project", project ? { ...project, id } : {});
+            activeModal.id = id ?? null;
+          }
+          if (target.dataset.edit === "event") {
+            const eventItem = state.events.find((item) => item.event_id === id);
+            openModal("event", eventItem ? { ...eventItem, id } : {});
+            activeModal.id = id ?? null;
+          }
+          if (target.dataset.edit === "team") {
+            const member = state.teamMembers.find((item) => item.team_member_id === id);
+            openModal("team", member ? { ...member, id } : {});
+            activeModal.id = id ?? null;
+          }
+        }
+        if (target.dataset.delete) {
+          confirmDelete(target.dataset.delete, target.dataset.id);
+        }
+        if (target.id === "modal-close" || target.id === "modal-cancel" || target === modal.overlay) {
+          closeModal();
+        }
+      });
+
+      modal.form.addEventListener("submit", submitModal);
+
+      const setActiveSection = (section) => {
+        document.querySelectorAll("[data-page]").forEach((element) => {
+          if (section === "dashboard") {
+            element.classList.remove("is-hidden");
+            return;
+          }
+          const shouldShow = element.dataset.page === section;
+          element.classList.toggle("is-hidden", !shouldShow);
+        });
+
+        document.querySelectorAll("[data-section]").forEach((button) => {
+          if (!(button instanceof HTMLElement)) {
+            return;
+          }
+          button.classList.toggle("active", button.dataset.section === section);
+        });
+      };
+
+      loadData();
+    </script>
+
+    <nav class="mobile-nav">
+      <button class="mobile-item active" data-section="dashboard">Dashboard</button>
+      <button class="mobile-item" data-section="schedule">Schedule</button>
+      <button class="mobile-item" data-section="projects">Projects</button>
+      <button class="mobile-item" data-section="crew">Crew</button>
+      <button class="mobile-item" data-section="ledger">Ledger</button>
+    </nav>
+
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modal-title">Project</h3>
+          <button id="modal-close">✕</button>
+        </div>
+        <form id="modal-form">
+          <div class="modal-fields" id="modal-fields"></div>
+          <div class="modal-actions">
+            <button type="button" class="ghost" id="modal-cancel">Cancel</button>
+            <button type="submit" id="modal-submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
